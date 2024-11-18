@@ -30,4 +30,3 @@ def print_inorder(node):
 
     if node.right != None:
         print_inorder(node.right)
-        
