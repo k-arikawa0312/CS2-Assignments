@@ -102,7 +102,7 @@ def main():
     converter = NotationConverter()
     
     # テスト式　ここに変えたい式を入れる
-    infix_example = "A + B * C - D / E"
+    infix_example = "2 + ( 5 - 3 ) * 2"
     print(f"中置記法: {infix_example}")
     
     # 中置記法から他の記法への変換
