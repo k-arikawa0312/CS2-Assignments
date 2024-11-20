@@ -40,7 +40,6 @@ class NotationConverter:
 
     def infix_to_prefix(self, expression):
         """中置記法から前置記法への変換"""
-        # 式を逆順にして括弧を入れ替える
         tokens = expression.split()
         reversed_exp = []
         for token in reversed(tokens):
@@ -51,7 +50,6 @@ class NotationConverter:
             else:
                 reversed_exp.append(token)
         
-        # 後置記法に変換して逆順にする
         postfix = self.infix_to_postfix(' '.join(reversed_exp))
         return ' '.join(reversed(postfix.split()))
 
@@ -87,40 +85,60 @@ class NotationConverter:
 
     def postfix_to_prefix(self, expression):
         """後置記法から前置記法への変換"""
-        # 後置記法→中置記法→前置記法
         infix = self.postfix_to_infix(expression)
         return self.infix_to_prefix(infix)
 
     def prefix_to_postfix(self, expression):
         """前置記法から後置記法への変換"""
-        # 前置記法→中置記法→後置記法
         infix = self.prefix_to_infix(expression)
         return self.infix_to_postfix(infix)
 
-# 使用例
 def main():
     converter = NotationConverter()
     
-    # テスト式　ここに変えたい式を入れる
-    infix_example = "2 + ( 5 - 3 ) * 2"
-    print(f"中置記法: {infix_example}")
-    
-    # 中置記法から他の記法への変換
-    postfix = converter.infix_to_postfix(infix_example)
-    prefix = converter.infix_to_prefix(infix_example)
-    print(f"後置記法: {postfix}")
-    print(f"前置記法: {prefix}")
-    
-    # 変換結果の検証
-    print("\n変換結果の検証:")
-    print(f"後置記法→中置記法: {converter.postfix_to_infix(postfix)}")
-    print(f"前置記法→中置記法: {converter.prefix_to_infix(prefix)}")
-    print(f"後置記法→前置記法: {converter.postfix_to_prefix(postfix)}")
-    print(f"前置記法→後置記法: {converter.prefix_to_postfix(prefix)}")
+    while True:
+        print("\n=== 記法変換プログラム ===")
+        print("1: 中置記法からの変換")
+        print("2: 前置記法からの変換")
+        print("3: 後置記法からの変換")
+        print("4: 終了")
+        
+        choice = input("\n選択してください (1-4): ")
+        
+        if choice == '4':
+            print("プログラムを終了します。")
+            break
+            
+        if choice not in ['1', '2', '3']:
+            print("無効な選択です。1-4の数字を入力してください。")
+            continue
+            
+        print("\n式を入力してください（要素はスペースで区切ってください）")
+        print("例: A + B * C または + A * B C または A B C * +")
+        expression = input("式: ")
+        
+        try:
+            if choice == '1':  # 中置記法からの変換
+                print("\n=== 変換結果 ===")
+                print(f"前置記法: {converter.infix_to_prefix(expression)}")
+                print(f"後置記法: {converter.infix_to_postfix(expression)}")
+                
+            elif choice == '2':  # 前置記法からの変換
+                print("\n=== 変換結果 ===")
+                print(f"中置記法: {converter.prefix_to_infix(expression)}")
+                print(f"後置記法: {converter.prefix_to_postfix(expression)}")
+                
+            elif choice == '3':  # 後置記法からの変換
+                print("\n=== 変換結果 ===")
+                print(f"中置記法: {converter.postfix_to_infix(expression)}")
+                print(f"前置記法: {converter.postfix_to_prefix(expression)}")
+                
+        except Exception as e:
+            print(f"\nエラーが発生しました: {str(e)}")
+            print("式の形式を確認してください。")
 
 if __name__ == "__main__":
     main()
-
 # 重要な注意点：
 
 # 式の入力形式：
@@ -140,3 +158,6 @@ if __name__ == "__main__":
 
 # 中置記法では括弧 ( ) が使用可能
 # 括弧も前後にスペースが必要: "( A + B )"
+# 中置記法: 2 + ( 5 - 3 ) * 2
+# 前置記法: + 2 * - 5 3 2
+# 後置記法: 2 5 3 - 2 * +
