@@ -23,14 +23,14 @@ add(hash_table1,94)
 add(hash_table1,95)
 
 
-add(hash_table2,'Akabane')1
-add(hash_table2,'Jujo')1
-add(hash_table2,'Itabashi')1
-add(hash_table2,'Ikebukuro')1
+add(hash_table2,'Akabane')
+add(hash_table2,'Jujo')
+add(hash_table2,'Itabashi')
+add(hash_table2,'Ikebukuro')
 add(hash_table2,'Shinjuku')
 add(hash_table2,'Shibuya')
-add(hash_table2,'Ebisu')1
-add(hash_table2,'Osaki')1
+add(hash_table2,'Ebisu')
+add(hash_table2,'Osaki')
 
 print(hash_table1)
 print(hash_table2)
