@@ -60,6 +60,6 @@ def merge_sort(arr):
     return result
 
 # テスト実行
-arr = [10,2,5,8,1,4,3,7,9,6]
+arr = [3, 8, 2, 1, 7, 4, 6, 5]
 print("マージソートの実行過程:")
 result = merge_sort(arr)
