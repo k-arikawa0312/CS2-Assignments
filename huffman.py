@@ -1,15 +1,12 @@
 import heapq
 from collections import defaultdict
 
-class HuffmanNode:
+class Node:
     def __init__(self, char, freq):
         self.char = char
         self.freq = freq
         self.left = None
         self.right = None
-    
-    def __lt__(self, other):
-        return self.freq < other.freq
 
 def validate_percentages(percentages):
     """入力されたパーセンテージの合計が100%になるかチェック"""
@@ -17,68 +14,48 @@ def validate_percentages(percentages):
     if not (99.99 <= total <= 100.01):
         raise ValueError(f"パーセンテージの合計が100%になっていません。現在の合計: {total}%")
 
-def build_frequency_dict(percentages):
-    """カスタム文字とその頻度のディクショナリを作成"""
-    return {char: freq for char, freq in percentages.items()}
-
-def build_huffman_tree(freq_dict, fixed_codes=None):
-    """
-    ハフマン木を構築する
-    fixed_codesは特定の文字に特定のコードを割り当てるための辞書
-    """
-    # 固定コードの文字を除外
-    variable_chars = {char: freq for char, freq in freq_dict.items() 
-                      if fixed_codes is None or char not in fixed_codes}
-    
-    # 固定コード以外の文字のノードを作成
-    heap = [HuffmanNode(char, freq) for char, freq in variable_chars.items()]
+def build_huffman_tree(frequencies):
+    """ハフマン木を構築する"""
+    heap = [[weight, Node(char, weight)] for char, weight in frequencies.items()]
     heapq.heapify(heap)
     
     while len(heap) > 1:
-        left = heapq.heappop(heap)
-        right = heapq.heappop(heap)
-        
-        merged = HuffmanNode(None, left.freq + right.freq)
-        merged.left = left
-        merged.right = right
-        
-        heapq.heappush(heap, merged)
+        lo = heapq.heappop(heap)
+        hi = heapq.heappop(heap)
+        new_node = Node(None, lo[0] + hi[0])
+        new_node.left = lo[1]
+        new_node.right = hi[1]
+        heapq.heappush(heap, [new_node.freq, new_node])
     
-    return heap[0]
+    return heap[0][1]
 
-def generate_huffman_codes(root, current_code='', huffman_codes=None, fixed_codes=None):
-    """
-    ハフマン符号を生成する
-    特定の文字に固定のコードを割り当てるオプションを追加
-    """
-    if huffman_codes is None:
-        huffman_codes = {}
-    
-    # 固定コードがある場合は、先に追加
-    if fixed_codes:
-        huffman_codes.update(fixed_codes)
-    
-    if root is None:
-        return huffman_codes
-    
-    if root.char is not None and (fixed_codes is None or root.char not in fixed_codes):
-        huffman_codes[root.char] = current_code
-    
-    generate_huffman_codes(root.left, current_code + '0', huffman_codes, fixed_codes)
-    generate_huffman_codes(root.right, current_code + '1', huffman_codes, fixed_codes)
-    
-    return huffman_codes
+def generate_codes(node, prefix="", codebook={}):
+    """ハフマン符号を生成する"""
+    if node is not None:
+        if node.char is not None:
+            codebook[node.char] = prefix
+        generate_codes(node.left, prefix + "0", codebook)
+        generate_codes(node.right, prefix + "1", codebook)
+    return codebook
 
-def huffman_encode_from_percentages(percentages, fixed_codes=None):
-    """出現割合とオプションの固定コードからハフマン符号を生成"""
+def adjust_code_for_char(codebook, char, desired_code):
+    if char in codebook:
+        codebook[char] = desired_code
+        # Adjust other codes to ensure no conflicts
+        # This part can be complex and may require rebalancing the tree
+        # For simplicity, we assume no conflicts in this example
+    return codebook
+
+def huffman_encode_from_percentages(percentages):
+    """出現割合からハフマン符号を生成"""
     # 入力のバリデーション
     validate_percentages(percentages)
     
     # ハフマン木の構築
-    huffman_tree = build_huffman_tree(percentages, fixed_codes)
+    huffman_tree = build_huffman_tree(percentages)
     
     # ハフマン符号の生成
-    huffman_codes = generate_huffman_codes(huffman_tree, fixed_codes=fixed_codes)
+    huffman_codes = generate_codes(huffman_tree)
     
     return {
         'huffman_codes': huffman_codes,
@@ -87,7 +64,7 @@ def huffman_encode_from_percentages(percentages, fixed_codes=None):
 
 def main():
     while True:
-        print("\n--- カスタムハフマン符号化 ---")
+        print("\n--- パーセンテージからのハフマン符号化 ---")
         print("1. パーセンテージ入力")
         print("2. 終了")
         
@@ -111,25 +88,8 @@ def main():
                     except ValueError:
                         print("数値を正確に入力してください。")
                 
-                # 特定の文字に固定のコードを割り当てるかの確認
-                use_fixed_codes = input("特定の文字に固定のコードを割り当てますか？ (y/n): ").lower() == 'y'
-                fixed_codes = {}
-                
-                if use_fixed_codes:
-                    while True:
-                        fixed_char = input("固定コードを割り当てる文字を入力 (終了する場合は空白): ").strip()
-                        if not fixed_char:
-                            break
-                        
-                        if fixed_char not in percentages:
-                            print(f"エラー: '{fixed_char}'は入力されたパーセンテージに存在しません。")
-                            continue
-                        
-                        fixed_code = input(f"'{fixed_char}'の固定コードを入力: ").strip()
-                        fixed_codes[fixed_char] = fixed_code
-                
                 # ハフマン符号化の実行
-                result = huffman_encode_from_percentages(percentages, fixed_codes)
+                result = huffman_encode_from_percentages(percentages)
                 
                 # 結果の表示
                 print("\n入力されたパーセンテージ:")
