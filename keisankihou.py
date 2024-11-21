@@ -41,6 +41,7 @@ class NotationConverter:
     def infix_to_prefix(self, expression):
         """中置記法から前置記法への変換"""
         tokens = expression.split()
+        # 式を逆順にし、括弧を入れ替える
         reversed_exp = []
         for token in reversed(tokens):
             if token == '(':
@@ -50,8 +51,33 @@ class NotationConverter:
             else:
                 reversed_exp.append(token)
         
-        postfix = self.infix_to_postfix(' '.join(reversed_exp))
-        return ' '.join(reversed(postfix.split()))
+        # 後置記法に変換
+        stack = []
+        result = []
+        
+        for token in reversed_exp:
+            if not self.is_operator(token) and token not in '()':
+                result.append(token)
+            elif token == '(':
+                stack.append(token)
+            elif token == ')':
+                while stack and stack[-1] != '(':
+                    result.append(stack.pop())
+                stack.pop()  # '('を削除
+            else:
+                while (stack and stack[-1] != '(' and 
+                    self.get_precedence(stack[-1]) > self.get_precedence(token)):
+                    result.append(stack.pop())
+                stack.append(token)
+
+        while stack:
+            if stack[-1] != '(':
+                result.append(stack.pop())
+            else:
+                stack.pop()
+
+        # 結果を逆順にして前置記法にする
+        return ' '.join(reversed(result))
 
     def postfix_to_infix(self, expression):
         """後置記法から中置記法への変換"""
