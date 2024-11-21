@@ -93,7 +93,7 @@ def main():
     root = None
     
     # ツリーの作成
-    keys = [10, 5, 15, 3, 7]
+    keys = [2,5,4,3,7]
     for key in keys:
         root = bst.insert(root, key)
     
